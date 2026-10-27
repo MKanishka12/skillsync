@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import student_card %}
+{% block title %}Find Teammates{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <div class="page-head">
+    <div>
+      <h1>Find teammates</h1>
+      <p class="muted">{{ results|length }} of {{ total }} students shown, ranked by how well their skills fit yours.</p>
+    </div>
+  </div>
+
+  <form method="get" class="filters">
+    <label class="grow">Search by skill, interest or name
+      <input type="search" name="q" value="{{ q }}" placeholder="e.g. Python">
+    </label>
+    <label>Department
+      <select name="department">
+        <option value="">All departments</option>
+        {% for d in depts %}<option value="{{ d }}" {{ 'selected' if d == dept }}>{{ d }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Sort by
+      <select name="sort">
+        <option value="match" {{ 'selected' if sort == 'match' }}>Best match</option>
+        <option value="name" {{ 'selected' if sort == 'name' }}>Name</option>
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" name="common" value="1" {{ 'checked' if only_common }}> Shared skills only</label>
+    <button class="btn btn-primary" type="submit">Apply</button>
+    <a class="btn btn-ghost" href="{{ url_for('students') }}">Reset</a>
+  </form>
+
+  <details class="explain">
+    <summary>How is the match score calculated?</summary>
+    <p>Each score out of 100 combines three parts: <strong>{{ (weights[0]*100)|round|int }}%</strong> shared skills,
+      <strong>{{ (weights[1]*100)|round|int }}%</strong> shared interests and
+      <strong>{{ (weights[2]*100)|round|int }}%</strong> complementary skills (new skills they bring that you lack, full marks at three or more).
+      Shared parts use the overlap between the two lists relative to the shorter list.</p>
+  </details>
+
+  {% if results %}
+    <div class="cards">
+      {% for r in results %}{{ student_card(r) }}{% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <h3>No students match these filters</h3>
+      <p>Try a different skill or clear the filters.</p>
+      <a class="btn btn-outline btn-sm" href="{{ url_for('students') }}">Clear filters</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field_error %}
+{% block title %}Edit profile{% endblock %}
+{% block content %}
+<section class="wrap auth-wrap">
+  <div class="auth-card wide">
+    <h1>Edit your profile</h1>
+    <p class="muted">Updating your skills changes your match scores right away.</p>
+    <form method="post" novalidate class="form">
+      <div class="grid-2">
+        <label>Full name
+          <input type="text" name="name" value="{{ form.get('name','') }}" required>
+          {{ field_error(errors, 'name') }}
+        </label>
+        <label>Email
+          <input type="email" value="{{ g.user['email'] }}" disabled>
+        </label>
+        <label>Department
+          <select name="department" required>
+            {% for d in departments %}<option value="{{ d }}" {{ 'selected' if form.get('department') == d }}>{{ d }}</option>{% endfor %}
+          </select>
+          {{ field_error(errors, 'department') }}
+        </label>
+        <label>Year of study
+          <select name="year" required>
+            {% for k, v in years.items() %}<option value="{{ k }}" {{ 'selected' if form.get('year')|string == k|string }}>{{ v }}</option>{% endfor %}
+          </select>
+          {{ field_error(errors, 'year') }}
+        </label>
+      </div>
+      <label>Skills (comma separated)
+        <input type="text" name="skills" value="{{ form.get('skills','') }}" required>
+        {{ field_error(errors, 'skills') }}
+      </label>
+      <label>Areas of interest (comma separated)
+        <input type="text" name="interests" value="{{ form.get('interests','') }}" required>
+        {{ field_error(errors, 'interests') }}
+      </label>
+      <label>Short bio
+        <textarea name="bio" rows="4" maxlength="300" placeholder="What do you enjoy building?">{{ form.get('bio','') }}</textarea>
+        {{ field_error(errors, 'bio') }}
+      </label>
+      <div class="cta-row">
+        <button class="btn btn-primary btn-lg" type="submit">Save changes</button>
+        <a class="btn btn-ghost btn-lg" href="{{ url_for('my_profile') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

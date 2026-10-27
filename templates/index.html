@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Connect Skills. Build Teams.{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <h1>Connect Skills. Build Teams. Create Opportunities.</h1>
+      <p class="lead">SkillSync helps students on campus find teammates whose skills fit their projects. It compares what you know, what you care about and what you are missing, then ranks the people worth talking to.</p>
+      <div class="cta-row">
+        {% if g.user %}
+          <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard') }}">Go to dashboard</a>
+        {% else %}
+          <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">Register</a>
+          <a class="btn btn-outline btn-lg" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </div>
+      <p class="hero-stats">
+        <strong>{{ stats.students }}</strong> students and <strong>{{ stats.projects }}</strong> projects on SkillSync so far
+      </p>
+    </div>
+
+    <figure class="venn" aria-label="Illustration: two students' skills overlap">
+      <div class="venn-a">
+        <b>You</b><span>Python</span><span>SQL</span>
+      </div>
+      <div class="venn-b">
+        <b>Teammate</b><span>Figma</span><span>React</span>
+      </div>
+      <div class="venn-mid"><span>Flask</span></div>
+      <figcaption>Shared skills build trust. Different skills build a complete team. SkillSync scores both.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap split">
+    <div>
+      <h2>The problem</h2>
+      <p>Campus talent is scattered. Students form teams with the friends they already know, so strong coders never meet designers, and good project ideas stall because nobody knows who could help. Skills stay hidden inside departments and year groups.</p>
+    </div>
+    <div>
+      <h2>Our solution</h2>
+      <p>One place where every student lists their skills and interests, and every project lists what it needs. SkillSync does the matching with a transparent score you can read and trust, so finding a teammate takes minutes instead of weeks.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section" id="how">
+  <h2 class="section-title">How it works</h2>
+  <ol class="steps">
+    <li><span class="step-n">1</span><div><h3>Build your profile</h3><p>Register with your department, year, skills and interests. Update them any time as you learn.</p></div></li>
+    <li><span class="step-n">2</span><div><h3>Get matched</h3><p>See students ranked by shared skills, shared interests and the new skills they bring to your team.</p></div></li>
+    <li><span class="step-n">3</span><div><h3>Post or join projects</h3><p>Publish a project with the skills it needs, or browse the hub and express interest in one that fits you.</p></div></li>
+  </ol>
+</section>
+
+<section class="wrap section">
+  <div class="cta-band">
+    <h2>Your next teammate is already on campus.</h2>
+    {% if g.user %}
+      <a class="btn btn-accent btn-lg" href="{{ url_for('students') }}">Find teammates</a>
+    {% else %}
+      <a class="btn btn-accent btn-lg" href="{{ url_for('register') }}">Create your profile</a>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

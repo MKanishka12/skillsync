@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import chips %}
+{% block title %}{{ p['title'] }}{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <p class="crumb"><a href="{{ url_for('projects') }}">Project Hub</a></p>
+  <div class="page-head">
+    <div>
+      <h1>{{ p['title'] }}</h1>
+      <p class="muted">Posted by <a href="{{ url_for('profile', student_id=p['owner_id']) }}">{{ p['owner_name'] }}</a> ({{ p['owner_dept'] }}) on {{ p['created_at']|nice_date }}. Team of {{ p['team_size'] }}.</p>
+    </div>
+    {% if is_owner %}
+      <form method="post" action="{{ url_for('delete_project', pid=p['id']) }}" onsubmit="return confirm('Delete this project?');">
+        <button class="btn btn-danger" type="submit">Delete project</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="two-col wide-left">
+    <div class="panel">
+      <h3>About this project</h3>
+      <p class="prewrap">{{ p['description'] }}</p>
+      <h3>Required skills</h3>
+      {{ chips(p['required_skills']|items, mark=(g.user['skills']|items|map('lower')|list)) }}
+      <p class="muted small">Highlighted skills are ones you already have.</p>
+    </div>
+
+    <div class="stack">
+      {% if not is_owner %}
+      <div class="panel">
+        <div class="fit-line"><h3>Your fit</h3><span class="fit {{ 'fit-hi' if fit.pct >= 60 }}">{{ fit.pct }}%</span></div>
+        <div class="bar"><i style="width: {{ fit.pct }}%"></i></div>
+        {% if fit.missing %}<p class="small muted">You could learn: {{ fit.missing|join(', ') }}</p>
+        {% else %}<p class="small muted">You have every skill this project asks for.</p>{% endif %}
+
+        {% if my_interest %}
+          <p class="flash flash-success">You expressed interest on {{ my_interest['created_at']|nice_date }}.</p>
+          <form method="post" action="{{ url_for('withdraw_interest', pid=p['id']) }}">
+            <button class="btn btn-outline btn-block" type="submit">Withdraw interest</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('express_interest', pid=p['id']) }}" class="form">
+            <label>Message to the owner (optional)
+              <textarea name="message" rows="3" maxlength="300" placeholder="How could you contribute?"></textarea>
+            </label>
+            <button class="btn btn-primary btn-block" type="submit">Express interest</button>
+          </form>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="panel">
+        <h3>Interested students ({{ interested|length }})</h3>
+        {% if interested %}
+          <ul class="people">
+            {% for i in interested %}
+            <li>
+              <span class="avatar sm">{{ i['name']|initials }}</span>
+              <div>
+                <a href="{{ url_for('profile', student_id=i['student_id']) }}">{{ i['name'] }}</a>
+                <p class="muted small">{{ i['department'] }}, {{ i['year']|year_label }}</p>
+                {% if is_owner and i['message'] %}<p class="small quote">{{ i['message'] }}</p>{% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted small">No one yet.</p>
+        {% endif %}
+      </div>
+
+      {% if is_owner %}
+      <div class="panel">
+        <h3>Students who could join</h3>
+        {% if suggestions %}
+          <ul class="people">
+            {% for x in suggestions %}
+            <li>
+              <span class="avatar sm">{{ x.s['name']|initials }}</span>
+              <div>
+                <a href="{{ url_for('profile', student_id=x.s['id']) }}">{{ x.s['name'] }}</a>
+                <span class="fit small-fit">{{ x.pct }}% of needs</span>
+                <p class="muted small">Covers {{ x.covers|join(', ') }}</p>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted small">No other student has the required skills yet.</p>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

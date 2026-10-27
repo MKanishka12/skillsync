@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field_error %}
+{% block title %}Post a project{% endblock %}
+{% block content %}
+<section class="wrap auth-wrap">
+  <div class="auth-card wide">
+    <h1>Post a project</h1>
+    <p class="muted">Tell students what you are building and which skills you need.</p>
+    <form method="post" novalidate class="form">
+      <label>Project title
+        <input type="text" name="title" value="{{ form.get('title','') }}" required maxlength="100">
+        {{ field_error(errors, 'title') }}
+      </label>
+      <label>Description
+        <textarea name="description" rows="5" required placeholder="What problem does it solve? What will the team build?">{{ form.get('description','') }}</textarea>
+        {{ field_error(errors, 'description') }}
+      </label>
+      <div class="grid-2">
+        <label>Required skills (comma separated)
+          <input type="text" name="required_skills" value="{{ form.get('required_skills','') }}" placeholder="Python, UI Design" required>
+          {{ field_error(errors, 'required_skills') }}
+        </label>
+        <label>Team size
+          <input type="number" name="team_size" min="2" max="12" value="{{ form.get('team_size','4') }}" required>
+          {{ field_error(errors, 'team_size') }}
+        </label>
+      </div>
+      <div class="cta-row">
+        <button class="btn btn-primary btn-lg" type="submit">Publish project</button>
+        <a class="btn btn-ghost btn-lg" href="{{ url_for('projects') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

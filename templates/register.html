@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import field_error %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<section class="wrap auth-wrap">
+  <div class="auth-card wide">
+    <h1>Create your SkillSync profile</h1>
+    <p class="muted">It takes a minute. Separate skills and interests with commas.</p>
+    <form method="post" novalidate class="form">
+      <div class="grid-2">
+        <label>Full name
+          <input type="text" name="name" value="{{ form.get('name','') }}" required autocomplete="name">
+          {{ field_error(errors, 'name') }}
+        </label>
+        <label>College email
+          <input type="email" name="email" value="{{ form.get('email','') }}" required autocomplete="email">
+          {{ field_error(errors, 'email') }}
+        </label>
+        <label>Password
+          <input type="password" name="password" required minlength="6" autocomplete="new-password">
+          {{ field_error(errors, 'password') }}
+        </label>
+        <label>Confirm password
+          <input type="password" name="confirm" required autocomplete="new-password">
+          {{ field_error(errors, 'confirm') }}
+        </label>
+        <label>Department
+          <select name="department" required>
+            <option value="">Select department</option>
+            {% for d in departments %}<option value="{{ d }}" {{ 'selected' if form.get('department') == d }}>{{ d }}</option>{% endfor %}
+          </select>
+          {{ field_error(errors, 'department') }}
+        </label>
+        <label>Year of study
+          <select name="year" required>
+            <option value="">Select year</option>
+            {% for k, v in years.items() %}<option value="{{ k }}" {{ 'selected' if form.get('year') == k|string }}>{{ v }}</option>{% endfor %}
+          </select>
+          {{ field_error(errors, 'year') }}
+        </label>
+      </div>
+      <label>Skills
+        <input type="text" name="skills" value="{{ form.get('skills','') }}" placeholder="Python, UI Design, Public Speaking" required>
+        {{ field_error(errors, 'skills') }}
+      </label>
+      <label>Areas of interest
+        <input type="text" name="interests" value="{{ form.get('interests','') }}" placeholder="Machine Learning, Startups, Sustainability" required>
+        {{ field_error(errors, 'interests') }}
+      </label>
+      <button class="btn btn-primary btn-lg btn-block" type="submit">Create account</button>
+    </form>
+    <p class="auth-alt">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+  </div>
+</section>
+{% endblock %}

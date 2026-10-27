@@ -1,0 +1,41 @@
+{% macro chips(items, mark=none, cls='') -%}
+  <ul class="chips {{ cls }}">
+    {%- for it in items -%}
+      <li class="chip {{ 'chip-hit' if mark and it|lower in mark }}">{{ it }}</li>
+    {%- endfor -%}
+  </ul>
+{%- endmacro %}
+
+{% macro field_error(errors, name) -%}
+  {% if errors.get(name) %}<p class="field-error">{{ errors[name] }}</p>{% endif %}
+{%- endmacro %}
+
+{% macro student_card(r) -%}
+  {% set s = r.s %}{% set m = r.m %}
+  <article class="scard">
+    <div class="scard-top">
+      <span class="avatar">{{ s['name']|initials }}</span>
+      <div class="scard-id">
+        <h3><a href="{{ url_for('profile', student_id=s['id']) }}">{{ s['name'] }}</a></h3>
+        <p class="muted">{{ s['department'] }}, {{ s['year']|year_label }}</p>
+      </div>
+      <div class="score" title="Match score">
+        <strong>{{ m.score }}%</strong><span>match</span>
+      </div>
+    </div>
+    <div class="bar" aria-hidden="true"><i style="width: {{ m.score }}%"></i></div>
+
+    <div class="scard-block">
+      <h4>Skills you share</h4>
+      {% if m.common %}{{ chips(m.common, cls='hit') }}{% else %}<p class="muted small">No shared skills yet.</p>{% endif %}
+    </div>
+    <div class="scard-block">
+      <h4>Skills they could add</h4>
+      {% if m.complementary %}{{ chips(m.complementary[:5]) }}{% else %}<p class="muted small">Same skill set as yours.</p>{% endif %}
+    </div>
+    {% if m.common_interests %}
+    <p class="small shared-int">Both interested in {{ m.common_interests|join(', ') }}</p>
+    {% endif %}
+    <a class="btn btn-outline btn-block" href="{{ url_for('profile', student_id=s['id']) }}">View profile</a>
+  </article>
+{%- endmacro %}

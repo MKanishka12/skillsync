@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import chips, student_card %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <div class="page-head">
+    <div>
+      <h1>Welcome, {{ g.user['name'].split()[0] }}</h1>
+      <p class="muted">Here is what is happening on campus today.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('new_project') }}">Post a project</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><strong>{{ stats.students }}</strong><span>Students registered</span></div>
+    <div class="stat"><strong>{{ stats.projects }}</strong><span>Projects available</span></div>
+    <div class="stat"><strong>{{ stats.matching }}</strong><span>Students sharing your skills</span></div>
+    <div class="stat"><strong>{{ stats.mine }}</strong><span>Projects you posted</span></div>
+  </div>
+
+  <div class="dash-grid">
+    <div class="dash-main">
+      <div class="section-head">
+        <h2>Recommended teammates</h2>
+        <a href="{{ url_for('students') }}">See all matches</a>
+      </div>
+      {% if recommended %}
+        <div class="cards">
+          {% for r in recommended %}{{ student_card(r) }}{% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          <h3>No other students yet</h3>
+          <p>You are one of the first here. Matches appear as soon as another student registers.</p>
+        </div>
+      {% endif %}
+
+      <div class="section-head mt">
+        <h2>Recent projects</h2>
+        <a href="{{ url_for('projects') }}">Open Project Hub</a>
+      </div>
+      {% if recent_projects %}
+        <div class="plist">
+          {% for it in recent_projects %}
+          <a class="prow" href="{{ url_for('project_detail', pid=it.p['id']) }}">
+            <div>
+              <h3>{{ it.p['title'] }}</h3>
+              <p class="muted small">by {{ it.p['owner_name'] }}, needs {{ it.p['required_skills'] }}</p>
+            </div>
+            <span class="fit {{ 'fit-hi' if it.fit.pct >= 60 }}">{{ it.fit.pct }}% fit</span>
+          </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty">
+          <h3>No projects posted yet</h3>
+          <p>Be the first to post one and let SkillSync find your team.</p>
+          <a class="btn btn-primary btn-sm" href="{{ url_for('new_project') }}">Post a project</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="dash-side">
+      <div class="panel">
+        <div class="profile-sum">
+          <span class="avatar lg">{{ g.user['name']|initials }}</span>
+          <div>
+            <h3>{{ g.user['name'] }}</h3>
+            <p class="muted small">{{ g.user['department'] }}, {{ g.user['year']|year_label }}</p>
+          </div>
+        </div>
+        <h4>Your skills</h4>
+        {{ chips(g.user['skills']|items) }}
+        <h4>Your interests</h4>
+        {{ chips(g.user['interests']|items, cls='soft') }}
+        <a class="btn btn-outline btn-block" href="{{ url_for('edit_profile') }}">Edit profile</a>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

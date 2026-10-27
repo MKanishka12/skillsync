@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import chips %}
+{% block title %}Project Hub{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <div class="page-head">
+    <div>
+      <h1>Project Hub</h1>
+      <p class="muted">Projects looking for teammates. Fit shows how many required skills you already have.</p>
+    </div>
+    <a class="btn btn-primary" href="{{ url_for('new_project') }}">Post a project</a>
+  </div>
+
+  <form method="get" class="filters">
+    <label class="grow">Search projects
+      <input type="search" name="q" value="{{ q }}" placeholder="Title, description or skill">
+    </label>
+    <label>Show
+      <select name="scope">
+        <option value="all" {{ 'selected' if scope == 'all' }}>All projects</option>
+        <option value="mine" {{ 'selected' if scope == 'mine' }}>My projects</option>
+      </select>
+    </label>
+    <label>Sort by
+      <select name="sort">
+        <option value="recent" {{ 'selected' if sort == 'recent' }}>Most recent</option>
+        <option value="fit" {{ 'selected' if sort == 'fit' }}>Best fit for me</option>
+      </select>
+    </label>
+    <button class="btn btn-primary" type="submit">Apply</button>
+    <a class="btn btn-ghost" href="{{ url_for('projects') }}">Reset</a>
+  </form>
+
+  {% if items %}
+  <div class="cards">
+    {% for it in items %}{% set p = it.p %}
+    <article class="pcard">
+      <div class="pcard-top">
+        <h3><a href="{{ url_for('project_detail', pid=p['id']) }}">{{ p['title'] }}</a></h3>
+        <span class="fit {{ 'fit-hi' if it.fit.pct >= 60 }}">{{ it.fit.pct }}% fit</span>
+      </div>
+      <p class="muted small">by {{ p['owner_name'] }}, posted {{ p['created_at']|nice_date }}</p>
+      <p class="clamp">{{ p['description'] }}</p>
+      {{ chips(p['required_skills']|items, mark=(g.user['skills']|items|map('lower')|list)) }}
+      <div class="pcard-foot">
+        <span class="muted small">Team of {{ p['team_size'] }}, {{ p['interest_count'] }} interested</span>
+        <a class="btn btn-outline btn-sm" href="{{ url_for('project_detail', pid=p['id']) }}">View project</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <h3>No projects found</h3>
+    <p>Post the first one, or adjust your search.</p>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('new_project') }}">Post a project</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

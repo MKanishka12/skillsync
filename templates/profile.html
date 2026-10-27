@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import chips %}
+{% block title %}{{ s['name'] }}{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <div class="profile-head panel">
+    <span class="avatar xl">{{ s['name']|initials }}</span>
+    <div class="grow">
+      <h1>{{ s['name'] }}</h1>
+      <p class="muted">{{ s['department'] }}, {{ s['year']|year_label }}. Joined {{ s['created_at']|nice_date }}</p>
+      <p class="bio">{{ s['bio'] or ('No bio yet.' if not is_me else 'Add a short bio so teammates know what you are about.') }}</p>
+    </div>
+    {% if is_me %}
+      <a class="btn btn-primary" href="{{ url_for('edit_profile') }}">Edit profile</a>
+    {% elif match %}
+      <div class="score big"><strong>{{ match.score }}%</strong><span>match with you</span></div>
+    {% endif %}
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h3>Skills</h3>
+      {% if match %}{{ chips(s['skills']|items, mark=(g.user['skills']|items|map('lower')|list)) }}
+        <p class="muted small">Highlighted skills are ones you also have.</p>
+      {% else %}{{ chips(s['skills']|items) }}{% endif %}
+      <h3>Interests</h3>
+      {{ chips(s['interests']|items, cls='soft') }}
+    </div>
+
+    {% if match %}
+    <div class="panel">
+      <h3>Why you match</h3>
+      <dl class="why">
+        <dt>Shared skills</dt>
+        <dd>{% if match.common %}{{ chips(match.common, cls='hit') }}{% else %}None yet{% endif %}</dd>
+        <dt>Skills they could add to your team</dt>
+        <dd>{% if match.complementary %}{{ chips(match.complementary) }}{% else %}None, your skills are identical{% endif %}</dd>
+        <dt>Shared interests</dt>
+        <dd>{% if match.common_interests %}{{ chips(match.common_interests, cls='soft') }}{% else %}None yet{% endif %}</dd>
+      </dl>
+    </div>
+    {% else %}
+    <div class="panel">
+      <h3>Tips</h3>
+      <p class="muted">Keep your skills current. Matches and project fit scores are recalculated from your profile every time you save it.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <h2 class="mt">Projects by {{ s['name'].split()[0] }}</h2>
+  {% if projs %}
+    <div class="plist">
+      {% for p in projs %}
+      <a class="prow" href="{{ url_for('project_detail', pid=p['id']) }}">
+        <div><h3>{{ p['title'] }}</h3><p class="muted small">Needs {{ p['required_skills'] }}</p></div>
+        <span class="fit">Team of {{ p['team_size'] }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty"><p>No projects posted yet.</p></div>
+  {% endif %}
+</section>
+{% endblock %}
